@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noel Stany | Senior Data Analyst</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .edit-mode { outline: 2px dashed #6366f1; background-color: #f5f7ff; }
+        #admin-btn { display: none; } /* Hidden by default */
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans leading-relaxed">
+
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-10">
+        <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
+            <span class="font-bold text-xl tracking-tight text-indigo-900" id="nav-name">Noel Stany</span>
+            <div class="space-x-6 text-sm font-medium text-slate-600">
+                <a href="#about" class="hover:text-indigo-600">About</a>
+                <a href="#skills" class="hover:text-indigo-600">Skills</a>
+                <a href="#experience" class="hover:text-indigo-600">Experience</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="bg-white border-b border-slate-100 py-16 md:py-24">
+        <div class="max-w-5xl mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
+            <div class="relative">
+                <img id="display-pic" src="" alt="Profile" class="w-48 h-48 rounded-full object-cover border-4 border-indigo-100 shadow-xl">
+                <input type="text" id="pic-input" class="hidden mt-4 w-full p-2 text-xs border rounded" placeholder="Paste image URL here">
+            </div>
+            <div class="flex-1 text-center md:text-left">
+                <h1 id="hero-name" class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-2">Noel Stany</h1>
+                <h2 id="hero-title" class="text-2xl font-semibold text-indigo-600 mb-6">Senior Data Analyst</h2>
+                <p id="hero-bio" class="text-lg text-slate-600 max-w-2xl">Loading biography...</p>
+            </div>
+        </div>
+    </header>
+
+    <section id="skills" class="py-16 max-w-5xl mx-auto px-6">
+        <h3 class="text-2xl font-bold text-slate-900 mb-8 border-l-4 border-indigo-500 pl-4">Technical Expertise</h3>
+        <div id="skills-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            </div>
+    </section>
+
+    <section id="experience" class="py-16 bg-slate-100">
+        <div class="max-w-5xl mx-auto px-6">
+            <h3 class="text-2xl font-bold text-slate-900 mb-8 border-l-4 border-indigo-500 pl-4">Experience</h3>
+            <div id="experience-list" class="space-y-8">
+                </div>
+        </div>
+    </section>
+
+    <footer class="bg-white border-t border-slate-200 py-12">
+        <div class="max-w-5xl mx-auto px-6 text-center">
+            <p class="text-slate-500 text-sm mb-4">&copy; 2026 Noel Stany. All rights reserved.</p>
+            <button id="admin-btn" onclick="openAuthModal()" class="text-slate-400 hover:text-indigo-600 text-xs transition">Admin Access</button>
+            <div id="sync-container" class="hidden mt-4">
+                <button onclick="syncToGithub()" class="bg-indigo-600 text-white px-6 py-2 rounded-full font-bold shadow-lg hover:bg-indigo-700 transition">Sync Changes to GitHub</button>
+            </div>
+        </div>
+    </footer>
+
+    <div id="auth-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-2xl max-w-sm w-full">
+            <h4 class="text-lg font-bold mb-4">GitHub Authentication</h4>
+            <p class="text-sm text-slate-500 mb-4">Paste your Personal Access Token (PAT) to enable editing.</p>
+            <input type="password" id="github-token" class="w-full p-2 border rounded mb-4" placeholder="ghp_xxxxxxxxxxxx">
+            <div class="flex justify-end space-x-3">
+                <button onclick="closeAuthModal()" class="px-4 py-2 text-slate-600">Cancel</button>
+                <button onclick="enableEditMode()" class="px-4 py-2 bg-indigo-600 text-white rounded">Verify</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURATION: REPLACE THESE WITH YOUR DETAILS
+        const CONFIG = {
+            username: 'noel-stany',
+            repo: 'portfolio',
+            path: 'profile_data.json'
+        };
+
+        let profileData = {};
+        let userToken = "";
+
+        // 1. Check for Secret URL Param (?edit=true)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('edit') === 'true') {
+            document.getElementById('admin-btn').style.display = 'inline-block';
+        }
+
+        // 2. Fetch Data from JSON
+        async function loadProfile() {
+            try {
+                const response = await fetch(CONFIG.path);
+                profileData = await response.json();
+                renderProfile();
+            } catch (err) { console.error("Error loading data:", err); }
+        }
+
+        function renderProfile() {
+            document.getElementById('nav-name').innerText = profileData.name;
+            document.getElementById('hero-name').innerText = profileData.name;
+            document.getElementById('hero-title').innerText = profileData.title;
+            document.getElementById('hero-bio').innerText = profileData.bio;
+            document.getElementById('display-pic').src = profileData.profilePic;
+
+            // Render Skills
+            const skillsGrid = document.getElementById('skills-grid');
+            skillsGrid.innerHTML = profileData.skills.map(s => `
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                    <h4 class="font-bold text-indigo-600 mb-2">${s.category}</h4>
+                    <p class="text-slate-600 text-sm">${s.items}</p>
+                </div>
+            `).join('');
+
+            // Render Experience
+            const expList = document.getElementById('experience-list');
+            expList.innerHTML = profileData.experience.map(e => `
+                <div class="bg-white p-8 rounded-lg shadow-sm border border-slate-200">
+                    <h4 class="text-xl font-bold">${e.role}</h4>
+                    <p class="text-indigo-600 font-medium mb-2">${e.company}</p>
+                    <p class="text-slate-600">${e.description}</p>
+                </div>
+            `).join('');
+        }
+
+        // 3. Admin & Edit Logic
+        function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
+        function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
+
+        function enableEditMode() {
+            userToken = document.getElementById('github-token').value;
+            if (!userToken) return alert("Token required");
+            
+            closeAuthModal();
+            document.getElementById('sync-container').classList.remove('hidden');
+            document.getElementById('pic-input').classList.remove('hidden');
+            document.getElementById('pic-input').value = profileData.profilePic;
+
+            // Make text editable
+            const fields = ['hero-name', 'hero-title', 'hero-bio'];
+            fields.forEach(id => {
+                const el = document.getElementById(id);
+                el.contentEditable = "true";
+                el.classList.add('edit-mode');
+            });
+            alert("Edit Mode Enabled. Click on text to change it.");
+        }
+
+        // 4. Sync to GitHub via API
+        async function syncToGithub() {
+            // Update profileData object from DOM
+            profileData.name = document.getElementById('hero-name').innerText;
+            profileData.title = document.getElementById('hero-title').innerText;
+            profileData.bio = document.getElementById('hero-bio').innerText;
+            profileData.profilePic = document.getElementById('pic-input').value;
+
+            const url = `https://api.github.com/repos/${CONFIG.username}/${CONFIG.repo}/contents/${CONFIG.path}`;
+            
+            try {
+                // Get current file SHA (required by GitHub API to update)
+                const fileRes = await fetch(url);
+                const fileData = await fileRes.json();
+                const sha = fileData.sha;
+
+                const response = await fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${userToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: "Update profile via Web CMS",
+                        content: btoa(unescape(encodeURIComponent(JSON.stringify(profileData, null, 2)))),
+                        sha: sha
+                    })
+                });
+
+                if (response.ok) {
+                    alert("Changes pushed to GitHub successfully! Site will update in a few minutes.");
+                    location.reload();
+                } else {
+                    alert("Error syncing: Check your token permissions.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Failed to sync. See console for details.");
+            }
+        }
+
+        window.onload = loadProfile;
+    </script>
+</body>
+</html>
