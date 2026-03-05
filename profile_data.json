@@ -1,0 +1,18 @@
+{
+  "name": "Noel Stany",
+  "title": "Senior Data Analyst",
+  "bio": "Senior Data Analyst with over 6 years of experience in the Healthcare domain. I specialize in bridging the gap between advanced statistical theory (M.Sc. Statistics) and modern data engineering to ensure high-integrity data processing and validation.",
+  "profilePic": "https://via.placeholder.com/150",
+  "skills": [
+    {"category": "Advanced Analytics", "items": "SAS, Statistics, Data Validation, Quality Assurance"},
+    {"category": "Data Engineering", "items": "PySpark, SQL, Python, ETL Pipelines, Airflow"},
+    {"category": "Visualization", "items": "Tableau, Power BI, MS Excel"}
+  ],
+  "experience": [
+    {
+      "role": "Senior Data Analyst",
+      "company": "Krythium Solutions",
+      "description": "Leading data validation and integrity projects within the US Healthcare domain."
+    }
+  ]
+}
